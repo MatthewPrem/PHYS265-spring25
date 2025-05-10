@@ -1,0 +1,14 @@
+Is not supported on Windows, so use Windows Subsystem for Linux (default Ubuntu installation)
+Jupyter lab has to be instlled on WSL to use the notebook. Files are then copied to the project file on windows to allow for easy pushing to Github
+Install 
+
+Jupyter lab install did not work with the windows powershell installation for pip, so I attempted to do it in the WSL bash terminal
+Commands run: 
+- sudo apt-get update
+- sudo apt install python3-pip
+- apt install pipx
+- pipx install jupyterlab
+- pipx ensurepath
+<reopen terminal>
+- apt install jupyter-core
+-jupyter-lab --allow-root
