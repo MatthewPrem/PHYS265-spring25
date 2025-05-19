@@ -28,3 +28,44 @@ apt install jupyter-core<br>
 jupyter-lab --allow-root
 </code><br>
 A few seconds after the <code>jupyter-lab</code> command was run, a link to a localhost URL was displayed. Once this URL was pasted into a browser (running on the Windows side of my computer) it brought up a jupyter lab editor where the notebook in this repository is able to run.
+
+[7] Yes, the source code is available. You can access the source code for Pynbody online at <a href="https://github.com/pynbody/pynbody">https://github.com/pynbody/pynbody</a> and the source code for Topsy online at <a href="https://github.com/pynbody/topsy">https://github.com/pynbody/topsy</a>", or you can download the source code using the <code>git clone</code> commands as detailed in part 5.
+
+[8] Yes, Pynbody is indeed used by other packages. One example is the <a href="https://edge-simulation.github.io/">EDGE</a> project for simulating the smallest galaxies in the universe. There are also several packages that reference Pynbody which were developed for uses that Pynbody doesn't quite fit. A couple examples include <a href="https://doi.org/10.21105/joss.02430">swiftsimio</a>, which found Pynbody too slow for their application and <a href="https://doi.org/10.21105/joss.01884">Plonk</a> which made an n-body visualization code more suited to astrophysical n-body simulations rather than the cosmological n-body simulations Pynbody was designed with in mind. I was unable to find any packages that used Topsy.
+
+[9] Pynbody is a python package, meaning that it is designed to be used either in a python source file (a .py file) or an implementation of python such as Jupyter. For this project, I used Jupyter notebook for running Pynbody. Topsy is designed to be used through the command line, for example by typing this command into bash: <code>topsy testdata/gasoline_ahf/g15784.lr.01024.gz</code> It is possible to use Topsy in Python or a Jupyter notebook in one of two ways:<br>
+1: import the subprocess package and use use that to build up a command that will then be execulted by bash. If you wanted to render just the gas particles of that same data set with this method, that can be achived using the following code:<br> 
+<code>import subprocess<br>
+subprocess.run(["topsy","testdata/gasoline_ahf/g15784.lr.01024.gz", "-p","gas"]);</code><br>
+2: Use the Jupyter-rbf widget to render it within a jupyter notebook. An equivalent statement to the example of the first method is as follows:<br>
+<code>
+import topsy<br>
+topsy.load("testdata/gasoline_ahf/g15784.lr.01024.gz", particle="gas",hdr=False);
+</code><br>Unfortunately, there are often errors creating the interactive window. When testing this code on my machine, it created the window the very first time I ran this code, but never again. The command line methods will likely be more stable as they create a separate window and don't have to rely on widgets to create a proper rendering context.
+
+[10] Assuming starting from a fresh install and no test data, the following code can be executed to create a figure of the gas in a galaxy in a cosmological simulation:<br>
+<code>
+import numpy as np<br>
+#download the test data<br>
+import pynbody.test_utils<br>
+pynbody.test_utils.precache_test_data()<br>
+
+import pynbody<br>
+import pylab<br>
+s = pynbody.load('testdata/gasoline_ahf/g15784.lr.01024.gz')<br>
+print(f"There are {len(s)} particles in this simulation")<br>
+
+#Find halos<br>
+h = s.halos()<br>
+
+#Get the halo of the largest galaxy in this cluster<br>
+main_halo = h[0]<br>
+
+import matplotlib.pyplot as plt<br>
+#create an image<br>
+s.physical_units() #turn simulation space into kpc or Mpc<br>
+t = pynbody.analysis.center(main_halo) #center on the largest galaxy<br>
+image_values = pynbody.plot.image(main_halo.gas, width=100,height=100,cmap="inferno") #plot the image<br>
+plt.title("Halo 1 Galaxy Gas") #give it a title<br>
+plt.savefig("Galactic_gas.png") #save it
+</code>
